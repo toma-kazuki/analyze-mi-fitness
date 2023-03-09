@@ -12,9 +12,37 @@ namespace analyze_mi_fitness
 {
     public partial class Form1 : Form
     {
+        // ファイルパスを格納する
+        string filePass = String.Empty;
+
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void SelectFileButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofDialog = new OpenFileDialog();
+
+            // デフォルトのフォルダを指定する
+            ofDialog.InitialDirectory = @"C:";
+
+            //ダイアログのタイトルを指定する
+            ofDialog.Title = "ダイアログのタイトル";
+
+            //ダイアログを表示する
+            if (ofDialog.ShowDialog() == DialogResult.OK)
+            {
+                FilePassTextBox.Text = ofDialog.FileName;
+                filePass = ofDialog.FileName;
+            }
+            else
+            {
+                Console.WriteLine("キャンセルされました");
+            }
+
+            // オブジェクトを破棄する
+            ofDialog.Dispose();
         }
     }
 }
