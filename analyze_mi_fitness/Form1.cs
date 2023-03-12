@@ -39,7 +39,7 @@ namespace analyze_mi_fitness
             ofDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
 
             //ダイアログのタイトルを指定する
-            ofDialog.Title = "ダイアログのタイトル";
+            ofDialog.Title = "開くファイルを選択ください";
 
             //ダイアログを表示する
             if (ofDialog.ShowDialog() == DialogResult.OK)
@@ -61,7 +61,6 @@ namespace analyze_mi_fitness
             //指定したcsvを開く
             StreamReader sr = new StreamReader(@filePass);
 
-            List<string[]> lists = new List<string[]>();
             List<Dictionary<string, dynamic>> dictionaly = new List<Dictionary<string, dynamic>>();
 
             // ファイル名と文字エンコードを指定してパーサを実体化
@@ -83,17 +82,11 @@ namespace analyze_mi_fitness
 
                     if (splittedResult[2] == "outdoor_running")
                     {
-                        // 配列からリストに格納する
-                        lists.Add(splittedResult);
-
                         var dic = ParseJson(splittedResult[5]);
-                        dictionaly.Add(dic);
 
-                        if (dic["distance"] > 9000 && dic["distance"] < 11000)
+                        if (dic["distance"] > Decimal.Parse(MinDistanceRangeComboBox.SelectedItem.ToString()) * 1000 && dic["distance"] < Decimal.Parse(MaxDistanceRangeComboBox.Text.ToString()) * 1000)
                         {
-                            //Console.WriteLine("time : " + dic["time"]);
-                            //Console.WriteLine("avg_hrm : " + dic["avg_hrm"]);
-                            //Console.WriteLine("distance : " + dic["distance"]);
+                            dictionaly.Add(dic);
                         }
                     }
                 }
@@ -155,10 +148,9 @@ namespace analyze_mi_fitness
                 // エクセルファイルにデータをセットする
                 for (int i = 1; i < data.Count; i++)
                 {
-                    Console.WriteLine(data.Count);
-                    Console.WriteLine(i);
+                    ProgressLabel.Text = $"{i} / {data.Count - 1}";
 
-                    for (int j = 1; j < 5; j++)
+                    for (int j = 1; j < 6; j++)
                     {
                         // Excelのcell指定
                         Excel.Range w_rgn = ws.Cells;
@@ -170,7 +162,8 @@ namespace analyze_mi_fitness
                             switch (j)
                             {
                                 case 1:
-                                    rgn.Value2 = data[i - 1]["time"];
+                                    var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
+                                    rgn.Value2 = dateTime.ToString();
                                     break;
                                 case 2:
                                     rgn.Value2 = data[i - 1]["avg_hrm"];
@@ -181,7 +174,12 @@ namespace analyze_mi_fitness
                                 case 4:
                                     rgn.Value2 = data[i - 1]["duration"];
                                     break;
-
+                                case 5:
+                                    Decimal distance = data[i - 1]["distance"] / 1000;
+                                    Decimal duration = data[i - 1]["duration"] / 60;
+                                    Decimal pace = duration / distance;
+                                    rgn.Value2 = pace;
+                                    break;
                             }
                         }
                         finally
@@ -195,10 +193,33 @@ namespace analyze_mi_fitness
                     }
                 }
 
-                //excelファイルの保存
-                wb.SaveAs(@"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy\output.xlsx");
-                wb.Close(false);
-                ExcelApp.Quit();
+                // SaveFileDialogを表示
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+                //ダイアログのタイトルを指定する
+                saveFileDialog.Title = "ファイルを保存する";
+                // デフォルトのフォルダを指定する
+                saveFileDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
+
+                // デフォルトファイル名
+                saveFileDialog.FileName = @"output.xlsx";
+
+                //ダイアログを表示する
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    wb.SaveAs(saveFileDialog.FileName);
+                    wb.Close(false);
+                    ExcelApp.Quit();
+                }
+                else
+                {
+                    Console.WriteLine("キャンセルされました");
+                }
+
+                // オブジェクトを破棄する
+                saveFileDialog.Dispose();
+
+                ProgressLabel.Text = "出力完了";
             }
             finally
             {
