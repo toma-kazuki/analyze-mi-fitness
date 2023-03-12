@@ -31,6 +31,7 @@
             this.FilePassTextBox = new System.Windows.Forms.TextBox();
             this.SelectFileButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.ExportButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FilePassTextBox
@@ -58,15 +59,26 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 38);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(219, 28);
+            this.label1.Size = new System.Drawing.Size(175, 22);
             this.label1.TabIndex = 2;
             this.label1.Text = "ランニングデータを選択";
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Location = new System.Drawing.Point(249, 233);
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.Size = new System.Drawing.Size(119, 43);
+            this.ExportButton.TabIndex = 101;
+            this.ExportButton.Text = "エクスポート";
+            this.ExportButton.UseVisualStyleBackColor = true;
+            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(609, 288);
+            this.Controls.Add(this.ExportButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SelectFileButton);
             this.Controls.Add(this.FilePassTextBox);
@@ -86,6 +98,7 @@
         private System.Windows.Forms.TextBox FilePassTextBox;
         private System.Windows.Forms.Button SelectFileButton;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button ExportButton;
     }
 }
 
