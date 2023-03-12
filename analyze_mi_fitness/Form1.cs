@@ -61,7 +61,7 @@ namespace analyze_mi_fitness
             //指定したcsvを開く
             StreamReader sr = new StreamReader(@filePass);
 
-            List<Dictionary<string, dynamic>> dictionaly = new List<Dictionary<string, dynamic>>();
+            List<Dictionary<string, dynamic>> data = new List<Dictionary<string, dynamic>>();
 
             // ファイル名と文字エンコードを指定してパーサを実体化
             using (TextFieldParser txtParser =
@@ -82,20 +82,18 @@ namespace analyze_mi_fitness
 
                     if (splittedResult[2] == "outdoor_running")
                     {
+                        // splittedResult[5] に json 型データが入っている
                         var dic = ParseJson(splittedResult[5]);
 
+                        // 指定の範囲のデータのみ取り出す
                         if (dic["distance"] > Decimal.Parse(MinDistanceRangeComboBox.SelectedItem.ToString()) * 1000 && dic["distance"] < Decimal.Parse(MaxDistanceRangeComboBox.Text.ToString()) * 1000)
                         {
-                            dictionaly.Add(dic);
+                            data.Add(dic);
                         }
                     }
                 }
 
-                //for (int i = 0; i < 10; i++)
-                //{
-                //    Console.WriteLine(dictionaly[i]["distance"]);
-                //}
-                excel_OutPutEx(dictionaly);
+                excel_OutPutEx(data);
             }
         }
 
@@ -145,40 +143,53 @@ namespace analyze_mi_fitness
 
                 ExcelApp.Visible = false;
 
+                // タイトル行をセット
+                // Excelのcell指定
+                ws.Cells[1, 1] = "ランニング日時";
+                ws.Cells[1, 2] = "ランニング日";
+                ws.Cells[1, 3] = "平均心拍数";
+                ws.Cells[1, 4] = "走行距離";
+                ws.Cells[1, 5] = "所要時間";
+                ws.Cells[1, 6] = "平均ペース";
+
                 // エクセルファイルにデータをセットする
                 for (int i = 1; i < data.Count; i++)
                 {
                     ProgressLabel.Text = $"{i} / {data.Count - 1}";
 
-                    for (int j = 1; j < 6; j++)
+                    for (int j = 1; j < 7; j++)
                     {
                         // Excelのcell指定
                         Excel.Range w_rgn = ws.Cells;
-                        Excel.Range rgn = w_rgn[i, j];
+                        Excel.Range rgn = w_rgn[i + 1, j];
 
                         try
                         {
+                            var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
+
                             // Excelにデータをセット
                             switch (j)
                             {
                                 case 1:
-                                    var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
                                     rgn.Value2 = dateTime.ToString();
                                     break;
                                 case 2:
-                                    rgn.Value2 = data[i - 1]["avg_hrm"];
+                                    rgn.Value2 = dateTime.Date.ToString();
                                     break;
                                 case 3:
-                                    rgn.Value2 = data[i - 1]["distance"];
+                                    rgn.Value2 = data[i - 1]["avg_hrm"];
                                     break;
                                 case 4:
-                                    rgn.Value2 = data[i - 1]["duration"];
+                                    rgn.Value2 = data[i - 1]["distance"];
                                     break;
                                 case 5:
+                                    rgn.Value2 = data[i - 1]["duration"];
+                                    break;
+                                case 6:
                                     Decimal distance = data[i - 1]["distance"] / 1000;
                                     Decimal duration = data[i - 1]["duration"] / 60;
                                     Decimal pace = duration / distance;
-                                    rgn.Value2 = pace;
+                                    rgn.Value2 = pace.ToString("0.00");
                                     break;
                             }
                         }
