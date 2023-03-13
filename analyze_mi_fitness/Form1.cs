@@ -85,10 +85,10 @@ namespace analyze_mi_fitness
                         }
                     }
                 }
-
-                // エクセルに出力
-                excel_OutPutEx(data);
             }
+
+            // エクセルに出力
+            excel_OutPutEx(data);
         }
 
         // JSON文字列をDictionary<string, dynamic>型に変換するメソッド
