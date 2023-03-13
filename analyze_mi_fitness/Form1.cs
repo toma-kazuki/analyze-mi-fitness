@@ -52,6 +52,7 @@ namespace analyze_mi_fitness
             //指定したcsvを開く
             StreamReader sr = new StreamReader(@filePass);
 
+            // json 形式のデータを格納する変数を用意
             List<Dictionary<string, dynamic>> data = new List<Dictionary<string, dynamic>>();
 
             // ファイル名と文字エンコードを指定してパーサを実体化
@@ -71,12 +72,13 @@ namespace analyze_mi_fitness
                     // 一行を読み込んで配列に結果を受け取る
                     string[] splittedResult = txtParser.ReadFields();
 
+                    // ランニングデータのみ取得する
                     if (splittedResult[2] == "outdoor_running")
                     {
-                        // splittedResult[5] に json 型データが入っている
+                        // splittedResult[5] の json 型データを Dictionaly 型に変換
                         var dic = ParseJson(splittedResult[5]);
 
-                        // 指定の範囲のデータのみ取り出す
+                        // 指定の範囲のデータのみ取り出し、data に格納
                         if (dic["distance"] > Decimal.Parse(MinDistanceRangeComboBox.SelectedItem.ToString()) * 1000 && dic["distance"] < Decimal.Parse(MaxDistanceRangeComboBox.Text.ToString()) * 1000)
                         {
                             data.Add(dic);
@@ -84,6 +86,7 @@ namespace analyze_mi_fitness
                     }
                 }
 
+                // エクセルに出力
                 excel_OutPutEx(data);
             }
         }
