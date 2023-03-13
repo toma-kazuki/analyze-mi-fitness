@@ -142,16 +142,17 @@ namespace analyze_mi_fitness
                 ws.Cells[1, 1] = "ランニング日時";
                 ws.Cells[1, 2] = "ランニング日";
                 ws.Cells[1, 3] = "平均心拍数";
-                ws.Cells[1, 4] = "走行距離";
-                ws.Cells[1, 5] = "所要時間";
-                ws.Cells[1, 6] = "平均ペース";
+                ws.Cells[1, 4] = "走行距離 [m]";
+                ws.Cells[1, 5] = "所要時間 [s]";
+                ws.Cells[1, 6] = "平均ペース [min]";
+                ws.Cells[1, 7] = "平均ペース [min:s]";
 
                 // エクセルファイルにデータをセットする
                 for (int i = 1; i < data.Count; i++)
                 {
                     ProgressLabel.Text = $"{i} / {data.Count - 1}";
 
-                    for (int j = 1; j < 7; j++)
+                    for (int j = 1; j < 8; j++)
                     {
                         // Excelのcell指定
                         Excel.Range w_rgn = ws.Cells;
@@ -160,6 +161,13 @@ namespace analyze_mi_fitness
                         try
                         {
                             var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
+                            
+                            Decimal distance_km = data[i - 1]["distance"] / 1000;
+                            Decimal duration_min = data[i - 1]["duration"] / 60;
+                            Decimal pace = duration_min / distance_km;
+
+                            int pace_min_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) / 60;
+                            int pace_s_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) % 60;
 
                             // Excelにデータをセット
                             switch (j)
@@ -180,10 +188,10 @@ namespace analyze_mi_fitness
                                     rgn.Value2 = data[i - 1]["duration"];
                                     break;
                                 case 6:
-                                    Decimal distance = data[i - 1]["distance"] / 1000;
-                                    Decimal duration = data[i - 1]["duration"] / 60;
-                                    Decimal pace = duration / distance;
                                     rgn.Value2 = pace.ToString("0.00");
+                                    break;
+                                case 7:
+                                    rgn.Value2 = $"{pace_min_km}:{pace_s_km}";
                                     break;
                             }
                         }
