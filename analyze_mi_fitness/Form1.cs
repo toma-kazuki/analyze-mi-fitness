@@ -27,7 +27,7 @@ namespace analyze_mi_fitness
             OpenFileDialog ofDialog = new OpenFileDialog();
 
             // デフォルトのフォルダを指定する
-            ofDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
+            ofDialog.InitialDirectory = @"C:";
 
             //ダイアログのタイトルを指定する
             ofDialog.Title = "開くファイルを選択ください";
@@ -155,8 +155,7 @@ namespace analyze_mi_fitness
                     for (int j = 1; j < 8; j++)
                     {
                         // Excelのcell指定
-                        Excel.Range w_rgn = ws.Cells;
-                        Excel.Range rgn = w_rgn[i + 1, j];
+                        Excel.Range rgn = ws.Cells[i + 1, j];
 
                         try
                         {
@@ -191,16 +190,14 @@ namespace analyze_mi_fitness
                                     rgn.Value2 = pace.ToString("0.00");
                                     break;
                                 case 7:
-                                    rgn.Value2 = $"{pace_min_km}:{pace_s_km}";
+                                    rgn.Value2 = $"0:{pace_min_km}:{pace_s_km}";
                                     break;
                             }
                         }
                         finally
                         {
                             // Excelのオブジェクトはループごとに開放する
-                            Marshal.ReleaseComObject(w_rgn);
                             Marshal.ReleaseComObject(rgn);
-                            w_rgn = null;
                             rgn = null;
                         }
                     }
@@ -212,7 +209,7 @@ namespace analyze_mi_fitness
                 //ダイアログのタイトルを指定する
                 saveFileDialog.Title = "ファイルを保存する";
                 // デフォルトのフォルダを指定する
-                saveFileDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
+                saveFileDialog.InitialDirectory = @"C:";
 
                 // デフォルトファイル名
                 saveFileDialog.FileName = @"output.xlsx";
