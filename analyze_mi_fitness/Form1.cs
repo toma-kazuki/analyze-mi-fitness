@@ -17,12 +17,6 @@ namespace analyze_mi_fitness
         // ファイルパスを格納する
         string filePass = String.Empty;
 
-        // 出力するデータ
-        string time = "time";
-        string avg_hrm = "avg_hrm";
-        string distance = "distance";
-        string duration = "duration";
-
         public Form1()
         {
             InitializeComponent();
