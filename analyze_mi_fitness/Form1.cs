@@ -88,7 +88,7 @@ namespace analyze_mi_fitness
             }
 
             // エクセルに出力
-            excel_OutPutEx(data);
+            ExcelOutPutEx(data);
         }
 
         // JSON文字列をDictionary<string, dynamic>型に変換するメソッド
@@ -115,7 +115,7 @@ namespace analyze_mi_fitness
             return elem;
         }
 
-        private void excel_OutPutEx(List<Dictionary<string, dynamic>> data)
+        private void ExcelOutPutEx(List<Dictionary<string, dynamic>> data)
         {
             //Excelオブジェクトの初期化
             Excel.Application ExcelApp = null;
