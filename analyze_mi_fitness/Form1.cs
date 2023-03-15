@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Microsoft.VisualBasic.FileIO;
@@ -20,12 +17,6 @@ namespace analyze_mi_fitness
         // ファイルパスを格納する
         string filePass = String.Empty;
 
-        // 出力するデータ
-        string time = "time";
-        string avg_hrm = "avg_hrm";
-        string distance = "distance";
-        string duration = "duration";
-
         public Form1()
         {
             InitializeComponent();
@@ -36,7 +27,7 @@ namespace analyze_mi_fitness
             OpenFileDialog ofDialog = new OpenFileDialog();
 
             // デフォルトのフォルダを指定する
-            ofDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
+            ofDialog.InitialDirectory = @"C:";
 
             //ダイアログのタイトルを指定する
             ofDialog.Title = "開くファイルを選択ください";
@@ -61,6 +52,7 @@ namespace analyze_mi_fitness
             //指定したcsvを開く
             StreamReader sr = new StreamReader(@filePass);
 
+            // json 形式のデータを格納する変数を用意
             List<Dictionary<string, dynamic>> data = new List<Dictionary<string, dynamic>>();
 
             // ファイル名と文字エンコードを指定してパーサを実体化
@@ -80,21 +72,23 @@ namespace analyze_mi_fitness
                     // 一行を読み込んで配列に結果を受け取る
                     string[] splittedResult = txtParser.ReadFields();
 
+                    // ランニングデータのみ取得する
                     if (splittedResult[2] == "outdoor_running")
                     {
-                        // splittedResult[5] に json 型データが入っている
+                        // splittedResult[5] の json 型データを Dictionaly 型に変換
                         var dic = ParseJson(splittedResult[5]);
 
-                        // 指定の範囲のデータのみ取り出す
+                        // 指定の範囲のデータのみ取り出し、data に格納
                         if (dic["distance"] > Decimal.Parse(MinDistanceRangeComboBox.SelectedItem.ToString()) * 1000 && dic["distance"] < Decimal.Parse(MaxDistanceRangeComboBox.Text.ToString()) * 1000)
                         {
                             data.Add(dic);
                         }
                     }
                 }
-
-                excel_OutPutEx(data);
             }
+
+            // エクセルに出力
+            excel_OutPutEx(data);
         }
 
         // JSON文字列をDictionary<string, dynamic>型に変換するメソッド
@@ -148,24 +142,31 @@ namespace analyze_mi_fitness
                 ws.Cells[1, 1] = "ランニング日時";
                 ws.Cells[1, 2] = "ランニング日";
                 ws.Cells[1, 3] = "平均心拍数";
-                ws.Cells[1, 4] = "走行距離";
-                ws.Cells[1, 5] = "所要時間";
-                ws.Cells[1, 6] = "平均ペース";
+                ws.Cells[1, 4] = "走行距離 [m]";
+                ws.Cells[1, 5] = "所要時間 [s]";
+                ws.Cells[1, 6] = "平均ペース [min]";
+                ws.Cells[1, 7] = "平均ペース [min:s]";
 
                 // エクセルファイルにデータをセットする
                 for (int i = 1; i < data.Count; i++)
                 {
                     ProgressLabel.Text = $"{i} / {data.Count - 1}";
 
-                    for (int j = 1; j < 7; j++)
+                    for (int j = 1; j < 8; j++)
                     {
                         // Excelのcell指定
-                        Excel.Range w_rgn = ws.Cells;
-                        Excel.Range rgn = w_rgn[i + 1, j];
+                        Excel.Range rgn = ws.Cells[i + 1, j];
 
                         try
                         {
                             var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
+                            
+                            Decimal distance_km = data[i - 1]["distance"] / 1000;
+                            Decimal duration_min = data[i - 1]["duration"] / 60;
+                            Decimal pace = duration_min / distance_km;
+
+                            int pace_min_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) / 60;
+                            int pace_s_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) % 60;
 
                             // Excelにデータをセット
                             switch (j)
@@ -186,19 +187,17 @@ namespace analyze_mi_fitness
                                     rgn.Value2 = data[i - 1]["duration"];
                                     break;
                                 case 6:
-                                    Decimal distance = data[i - 1]["distance"] / 1000;
-                                    Decimal duration = data[i - 1]["duration"] / 60;
-                                    Decimal pace = duration / distance;
                                     rgn.Value2 = pace.ToString("0.00");
+                                    break;
+                                case 7:
+                                    rgn.Value2 = $"0:{pace_min_km}:{pace_s_km}";
                                     break;
                             }
                         }
                         finally
                         {
                             // Excelのオブジェクトはループごとに開放する
-                            Marshal.ReleaseComObject(w_rgn);
                             Marshal.ReleaseComObject(rgn);
-                            w_rgn = null;
                             rgn = null;
                         }
                     }
@@ -210,7 +209,7 @@ namespace analyze_mi_fitness
                 //ダイアログのタイトルを指定する
                 saveFileDialog.Title = "ファイルを保存する";
                 // デフォルトのフォルダを指定する
-                saveFileDialog.InitialDirectory = @"C:\Users\elko7\Desktop\20230307_6431065728_MiFitness_sgp2_data_copy";
+                saveFileDialog.InitialDirectory = @"C:";
 
                 // デフォルトファイル名
                 saveFileDialog.FileName = @"output.xlsx";

@@ -55,7 +55,7 @@
             // SelectFileButton
             // 
             this.SelectFileButton.Font = new System.Drawing.Font("源ノ角ゴシック Code JP R", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.SelectFileButton.Location = new System.Drawing.Point(424, 54);
+            this.SelectFileButton.Location = new System.Drawing.Point(424, 49);
             this.SelectFileButton.Margin = new System.Windows.Forms.Padding(4);
             this.SelectFileButton.Name = "SelectFileButton";
             this.SelectFileButton.Size = new System.Drawing.Size(48, 34);
