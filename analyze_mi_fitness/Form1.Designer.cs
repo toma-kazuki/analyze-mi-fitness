@@ -1,6 +1,6 @@
 ﻿namespace analyze_mi_fitness
 {
-    partial class Form1
+    partial class AnalyzeMiFitnessExerciseData
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -49,7 +49,7 @@
             this.FilePassTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.FilePassTextBox.Name = "FilePassTextBox";
             this.FilePassTextBox.ReadOnly = true;
-            this.FilePassTextBox.Size = new System.Drawing.Size(364, 26);
+            this.FilePassTextBox.Size = new System.Drawing.Size(364, 23);
             this.FilePassTextBox.TabIndex = 100;
             // 
             // SelectFileButton
@@ -69,7 +69,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(11, 22);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(175, 22);
+            this.label1.Size = new System.Drawing.Size(140, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "ランニングデータを選択";
             // 
@@ -176,7 +176,7 @@
             "43"});
             this.MinDistanceRangeComboBox.Location = new System.Drawing.Point(53, 143);
             this.MinDistanceRangeComboBox.Name = "MinDistanceRangeComboBox";
-            this.MinDistanceRangeComboBox.Size = new System.Drawing.Size(73, 30);
+            this.MinDistanceRangeComboBox.Size = new System.Drawing.Size(73, 25);
             this.MinDistanceRangeComboBox.TabIndex = 108;
             // 
             // label4
@@ -184,7 +184,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(132, 146);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(25, 22);
+            this.label4.Size = new System.Drawing.Size(20, 17);
             this.label4.TabIndex = 109;
             this.label4.Text = "ー";
             // 
@@ -281,7 +281,7 @@
             "43"});
             this.MaxDistanceRangeComboBox.Location = new System.Drawing.Point(159, 143);
             this.MaxDistanceRangeComboBox.Name = "MaxDistanceRangeComboBox";
-            this.MaxDistanceRangeComboBox.Size = new System.Drawing.Size(73, 30);
+            this.MaxDistanceRangeComboBox.Size = new System.Drawing.Size(73, 25);
             this.MaxDistanceRangeComboBox.TabIndex = 110;
             // 
             // label5
@@ -289,7 +289,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(238, 146);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(30, 22);
+            this.label5.Size = new System.Drawing.Size(24, 17);
             this.label5.TabIndex = 111;
             this.label5.Text = "km";
             // 
@@ -298,7 +298,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(13, 103);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(145, 22);
+            this.label3.Size = new System.Drawing.Size(116, 17);
             this.label3.TabIndex = 107;
             this.label3.Text = "出力する範囲を選択";
             // 
@@ -307,7 +307,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(192, 301);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 22);
+            this.label6.Size = new System.Drawing.Size(44, 17);
             this.label6.TabIndex = 112;
             this.label6.Text = "進捗：";
             // 
@@ -316,7 +316,7 @@
             this.ProgressLabel.AutoSize = true;
             this.ProgressLabel.Location = new System.Drawing.Point(239, 301);
             this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(0, 22);
+            this.ProgressLabel.Size = new System.Drawing.Size(0, 17);
             this.ProgressLabel.TabIndex = 113;
             // 
             // label7
@@ -324,13 +324,13 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(48, 220);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(415, 22);
+            this.label7.Size = new System.Drawing.Size(332, 17);
             this.label7.TabIndex = 115;
             this.label7.Text = "平均ペース、平均心拍数、走行距離、タイムを出力します。";
             // 
-            // Form1
+            // AnalyzeMiFitnessExerciseData
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(497, 343);
             this.Controls.Add(this.label7);
@@ -349,8 +349,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "AnalyzeMiFitnessExerciseData";
+            this.Text = "AnalyzeMiFitnessExerciseData";
             this.ResumeLayout(false);
             this.PerformLayout();
 

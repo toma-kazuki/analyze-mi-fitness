@@ -12,12 +12,12 @@ using System.Runtime.InteropServices;
 
 namespace analyze_mi_fitness
 {
-    public partial class Form1 : Form
+    public partial class AnalyzeMiFitnessExerciseData : Form
     {
         // ファイルパスを格納する
         string filePass = String.Empty;
 
-        public Form1()
+        public AnalyzeMiFitnessExerciseData()
         {
             InitializeComponent();
         }
