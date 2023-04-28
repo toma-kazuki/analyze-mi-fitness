@@ -49,9 +49,6 @@ namespace analyze_mi_fitness
 
         private void ExportButton_Click(object sender, EventArgs e)
         {
-            //指定したcsvを開く
-            StreamReader sr = new StreamReader(@filePass);
-
             // json 形式のデータを格納する変数を用意
             List<Dictionary<string, dynamic>> data = new List<Dictionary<string, dynamic>>();
 
@@ -75,8 +72,9 @@ namespace analyze_mi_fitness
                     // ランニングデータのみ取得する
                     if (splittedResult[2] == "outdoor_running")
                     {
-                        // splittedResult[5] の json 型データを Dictionaly 型に変換
-                        var dic = ParseJson(splittedResult[5]);
+                        // splittedResult[5] の json 型データを Dictionary 型に変換
+                        
+                        Dictionary<string, dynamic> dic = ParseJson(splittedResult[5]);
 
                         // 指定の範囲のデータのみ取り出し、data に格納
                         if (dic["distance"] > Decimal.Parse(MinDistanceRangeComboBox.SelectedItem.ToString()) * 1000 && dic["distance"] < Decimal.Parse(MaxDistanceRangeComboBox.Text.ToString()) * 1000)
@@ -88,18 +86,17 @@ namespace analyze_mi_fitness
             }
 
             // エクセルに出力
-            ExcelOutPutEx(data);
+            ExcelOutput(data);
         }
 
         // JSON文字列をDictionary<string, dynamic>型に変換するメソッド
         public static Dictionary<string, dynamic> ParseJson(string json)
         {
             // JSON文字列をDictionary<string, JsonData>型に変換
-            var dic = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            Dictionary<string, JsonElement> dic = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
             // JsonElementから値を取り出してdynamic型に入れてDictionary<string, dynamic>型で返す
-            return dic.Select(d => new { key = d.Key, value = JsonData(d.Value) })
-            .ToDictionary(a => a.key, a => a.value);
+            return dic.ToDictionary(d => d.Key, d => JsonData(d.Value));
         }
         
         private static dynamic JsonData(JsonElement elem)
@@ -115,10 +112,10 @@ namespace analyze_mi_fitness
             return elem;
         }
 
-        private void ExcelOutPutEx(List<Dictionary<string, dynamic>> data)
+        private void ExcelOutput(List<Dictionary<string, dynamic>> data)
         {
             //Excelオブジェクトの初期化
-            Excel.Application ExcelApp = null;
+            Excel.Application excelApp = null;
             Excel.Workbooks wbs = null;
             Excel.Workbook wb = null;
             Excel.Sheets shs = null;
@@ -127,15 +124,15 @@ namespace analyze_mi_fitness
             try
             {
                 //Excelシートのインスタンスを作る
-                ExcelApp = new Excel.Application();
-                wbs = ExcelApp.Workbooks;
+                excelApp = new Excel.Application();
+                wbs = excelApp.Workbooks;
                 wb = wbs.Add();
 
                 shs = wb.Sheets;
                 ws = shs[1];
                 ws.Select(Type.Missing);
 
-                ExcelApp.Visible = false;
+                excelApp.Visible = false;
 
                 // タイトル行をセット
                 // Excelのcell指定
@@ -155,50 +152,50 @@ namespace analyze_mi_fitness
                     for (int j = 1; j < 8; j++)
                     {
                         // Excelのcell指定
-                        Excel.Range rgn = ws.Cells[i + 1, j];
+                        Excel.Range range = ws.Cells[i + 1, j];
 
                         try
                         {
-                            var dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
+                            DateTimeOffset dateTime = DateTimeOffset.FromUnixTimeSeconds(decimal.ToInt64(data[i - 1]["time"])).ToLocalTime();
                             
-                            Decimal distance_km = data[i - 1]["distance"] / 1000;
-                            Decimal duration_min = data[i - 1]["duration"] / 60;
-                            Decimal pace = duration_min / distance_km;
+                            Decimal distanceKm = data[i - 1]["distance"] / 1000;
+                            Decimal durationMin = data[i - 1]["duration"] / 60;
+                            Decimal pace = durationMin / distanceKm;
 
-                            int pace_min_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) / 60;
-                            int pace_s_km = decimal.ToInt32(data[i - 1]["duration"] / distance_km) % 60;
+                            int paceMinKm = decimal.ToInt32(data[i - 1]["duration"] / distanceKm) / 60;
+                            int paceSecKm = decimal.ToInt32(data[i - 1]["duration"] / distanceKm) % 60;
 
                             // Excelにデータをセット
                             switch (j)
                             {
                                 case 1:
-                                    rgn.Value2 = dateTime.ToString();
+                                    range.Value2 = dateTime.ToString();
                                     break;
                                 case 2:
-                                    rgn.Value2 = dateTime.Date.ToString();
+                                    range.Value2 = dateTime.Date.ToString();
                                     break;
                                 case 3:
-                                    rgn.Value2 = data[i - 1]["avg_hrm"];
+                                    range.Value2 = data[i - 1]["avg_hrm"];
                                     break;
                                 case 4:
-                                    rgn.Value2 = data[i - 1]["distance"];
+                                    range.Value2 = data[i - 1]["distance"];
                                     break;
                                 case 5:
-                                    rgn.Value2 = data[i - 1]["duration"];
+                                    range.Value2 = data[i - 1]["duration"];
                                     break;
                                 case 6:
-                                    rgn.Value2 = pace.ToString("0.00");
+                                    range.Value2 = pace.ToString("0.00");
                                     break;
                                 case 7:
-                                    rgn.Value2 = $"0:{pace_min_km}:{pace_s_km}";
+                                    range.Value2 = $"0:{paceMinKm}:{paceSecKm}";
                                     break;
                             }
                         }
                         finally
                         {
                             // Excelのオブジェクトはループごとに開放する
-                            Marshal.ReleaseComObject(rgn);
-                            rgn = null;
+                            Marshal.ReleaseComObject(range);
+                            range = null;
                         }
                     }
                 }
@@ -219,7 +216,7 @@ namespace analyze_mi_fitness
                 {
                     wb.SaveAs(saveFileDialog.FileName);
                     wb.Close(false);
-                    ExcelApp.Quit();
+                    excelApp.Quit();
                 }
                 else
                 {
@@ -238,12 +235,12 @@ namespace analyze_mi_fitness
                 Marshal.ReleaseComObject(shs);
                 Marshal.ReleaseComObject(wb);
                 Marshal.ReleaseComObject(wbs);
-                Marshal.ReleaseComObject(ExcelApp);
+                Marshal.ReleaseComObject(excelApp);
                 ws = null;
                 shs = null;
                 wb = null;
                 wbs = null;
-                ExcelApp = null;
+                excelApp = null;
 
                 GC.Collect();
             }
